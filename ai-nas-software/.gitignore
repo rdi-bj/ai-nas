@@ -1,0 +1,32 @@
+# ===== 依赖 / 构建产物 =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+node_modules/
+.venv/
+venv/
+
+# ===== 环境变量 / 密钥 / 凭证（严禁入库）=====
+.env
+.env.*
+secrets/
+*.pem
+*.key
+*.p12
+credentials.json
+
+# ===== 编辑器 / 操作系统 =====
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# ===== 日志 / 临时文件 =====
+*.log
+tmp/
+
+# ===== OpenMediaVault 子模块（上游 Git 跟踪，勿手动放置源码）=====
+# src/openmediavault/ 由 git submodule 管理，详见 README

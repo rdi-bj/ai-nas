@@ -1,0 +1,44 @@
+# ===== 操作系统 / 编辑器临时文件 =====
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ===== EDA 工具备份 / 临时文件（保留设计源文件本身，如 .sch/.pcb/.brd/.dsn）=====
+*.sch~
+*.pcb~
+*.brd~
+*~
+*.bak
+*.tmp
+*.log
+*.swp
+
+# ===== 大体积二进制 / 镜像（走 GitHub/Gitee Releases 或外部对象存储，不进 git）=====
+*.img
+*.img.xz
+*.ext4
+*.deb
+*.iso
+*.zip
+
+# ===== 私有 / 敏感信息 =====
+*.env
+secrets/
+
+# ===== 不对外开源的生产 / 制造文件（Gerber、制板说明、结构件，走私有渠道）=====
+design/gerber/
+fab-notes/
+mechanical/
+*.gbr
+*.gerber
+*.gb?
+*.gt?
+*.gbo
+*.gto
+*.gbs
+*.gts
+*.gbp
+*.gtp
+*.odb
+*.odb++
