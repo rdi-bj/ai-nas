@@ -5,8 +5,8 @@ name: Mirror to Gitee
 # 注意：
 #   1. 本工作流为单向同步，请勿在 Gitee 端直接提交，避免双向冲突。
 #   2. 需在仓库 Settings -> Secrets and variables -> Actions 中配置：
-#        - GITEE_USER   : 你的 Gitee 用户名（或组织名，应与 GitHub 仓库归属一致，如 rdi-bj）
-#        - GITEE_SSH_KEY: 具备 Gitee 仓库写权限的 SSH 私钥（建议专用部署密钥）
+#        - GITEE_USER   : 你的 Gitee 用户名/组织名（如 rdi-bj）
+#        - GITEE_SSH_KEY: 具备 Gitee 仓库写权限的 SSH 私钥（建议专用部署密钥，且无密码保护）
 #   3. 首次使用请先在 Gitee 创建同名空仓库（本仓对应 rdi-bj/ai-nas），
 #      并将该 SSH 公钥添加为仓库部署密钥（勾选"允许推送"）。
 
@@ -25,8 +25,9 @@ jobs:
           fetch-depth: 0
 
       - name: Mirror to Gitee
-        uses: wearerequired/mirror-action@master
+        uses: wearerequired/git-mirror-action@v1
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.GITEE_SSH_KEY }}
         with:
           source-repo: "git@github.com:${{ github.repository }}.git"
           destination-repo: "git@gitee.com:${{ secrets.GITEE_USER }}/ai-nas.git"
-          ssh-private-key: ${{ secrets.GITEE_SSH_KEY }}
