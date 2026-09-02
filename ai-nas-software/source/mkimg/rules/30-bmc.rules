@@ -1,0 +1,1 @@
+SUBSYSTEM=="tty", ATTR{iomem_base}=="0x50920000", SYMLINK+="ttyBMC"

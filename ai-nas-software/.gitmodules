@@ -1,0 +1,18 @@
+# 上游源码以 git submodule 引用，不在本仓库内复制源代码。
+# 挂载命令：git submodule update --init source/<name>
+# 说明：完整构建还需 Eswin 提供的板级补丁（未包含在本仓库，详见 README「构建说明」）。
+
+[submodule "source/linux"]
+	path = source/linux
+	url = https://github.com/torvalds/linux.git
+	branch = master
+
+[submodule "source/uboot"]
+	path = source/uboot
+	url = https://github.com/u-boot/u-boot.git
+	branch = master
+
+[submodule "source/opensbi"]
+	path = source/opensbi
+	url = https://github.com/riscv-software-src/opensbi.git
+	branch = master

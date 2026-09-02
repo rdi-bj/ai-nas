@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+sleep 1
+for i in /proc/*/exe; do
+        if [ "$(readlink $i)" = "/usr/sbin/lightdm-gtk-greeter" ]; then
+                proc=$(dirname $i)
+                echo "Manually handling hotplug on the X server of $(basename $proc)"
+                disp="$(cat $proc/environ | tr '\0' '\n' | grep '^DISPLAY=' | cut -d = -f 2)"
+                echo "DISPLAY of it is $disp"
+                if [ ! -e "/var/run/lightdm/root/$disp" ]; then
+                        echo "Can not find xauth file, ignoring ..."
+                        continue
+                fi
+                export DISPLAY=$disp XAUTHORITY="/var/run/lightdm/root/$disp"
+                if xrandr | grep '^HDMI-1 connected'; then
+                        xrandr --output HDMI-1 --auto
+                fi
+        fi
+done

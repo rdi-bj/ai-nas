@@ -1,0 +1,15 @@
+KERNEL=="es-dsp0", MODE="0660", GROUP="eswin", OWNER="eswin"
+KERNEL=="es-dsp1", MODE="0660", GROUP="eswin", OWNER="eswin"
+KERNEL=="es-dsp2", MODE="0660", GROUP="eswin", OWNER="eswin"
+KERNEL=="es-dsp3", MODE="0660", GROUP="eswin", OWNER="eswin"
+KERNEL=="es-dsp4", MODE="0660", GROUP="eswin", OWNER="eswin"
+KERNEL=="es-dsp5", MODE="0660", GROUP="eswin", OWNER="eswin"
+KERNEL=="es-dsp6", MODE="0660", GROUP="eswin", OWNER="eswin"
+KERNEL=="es-dsp7", MODE="0660", GROUP="eswin", OWNER="eswin"
+
+KERNEL=="npu0", MODE="0660", GROUP="eswin", OWNER="eswin"
+KERNEL=="npu1", MODE="0660", GROUP="eswin", OWNER="eswin"
+KERNEL=="es_hae", MODE="0660", GROUP="eswin", OWNER="eswin"
+KERNEL=="mmz_nid_0_part_0", MODE="0660", GROUP="eswin", OWNER="eswin"
+KERNEL=="mmz_nid_1_part_0", MODE="0660", GROUP="eswin", OWNER="eswin"
+

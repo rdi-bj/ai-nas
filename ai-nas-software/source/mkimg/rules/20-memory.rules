@@ -1,0 +1,5 @@
+KERNEL=="linux,cma", MODE="0666", GROUP="eswin", OWNER="eswin"
+KERNEL=="llc_spram[0-1]", MODE="0666", GROUP="eswin", OWNER="eswin"
+KERNEL=="mmz_nid_[0-1]_part_[0-1]", MODE="0666", GROUP="eswin", OWNER="eswin"
+KERNEL=="system", MODE="0666", GROUP="eswin", OWNER="eswin"
+KERNEL=="mmz_vb", MODE="0666", GROUP="eswin", OWNER="eswin"

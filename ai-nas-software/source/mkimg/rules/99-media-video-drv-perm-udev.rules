@@ -1,0 +1,5 @@
+SUBSYSTEM=="graphics_class",MODE="0666"
+KERNEL=="es_vdec",MODE="0666"
+KERNEL=="es_venc",MODE="0666"
+SUBSYSTEM=="es_dewarp",MODE="0666"
+SUBSYSTEM=="es_media_ext_class",MODE="0666"

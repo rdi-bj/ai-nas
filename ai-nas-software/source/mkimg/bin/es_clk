@@ -1,0 +1,183 @@
+#!/bin/bash
+
+# Map of device paths based on module names for direct access
+declare -A device_paths=(
+    ["DSP0"]="/sys/class/devfreq/52280400.dsp_subsys:es_dsp@0"
+    ["DSP1"]="/sys/class/devfreq/52280400.dsp_subsys:es_dsp@1"
+    ["DSP2"]="/sys/class/devfreq/52280400.dsp_subsys:es_dsp@2"
+    ["DSP3"]="/sys/class/devfreq/52280400.dsp_subsys:es_dsp@3"
+    ["VDEC"]="/sys/class/devfreq/soc:video-decoder0@50100000"
+    ["VENC"]="/sys/class/devfreq/soc:video-encoder@50110000"
+    ["DEWARP"]="/sys/class/devfreq/51020000.dewarp"
+    ["HAE"]="/sys/class/devfreq/50140000.g2d"
+    ["NPU"]="/sys/class/devfreq/51c00000.eswin-npu/"
+)
+
+# Function to get the device path based on the provided module name
+find_device_path() {
+    module=$1
+    if [ -n "${device_paths[$module]}" ]; then
+        echo "${device_paths[$module]}"
+        return 0
+    else
+        echo ""
+        return 1
+    fi
+}
+
+# Function to get all matching device paths based on the provided module name
+find_device_paths() {
+    module=$1
+    matches=()
+    for key in "${!device_paths[@]}"; do
+        if [[ "$key" == *"$module"* ]]; then
+            matches+=("${device_paths[$key]}")
+        fi
+    done
+    if [ ${#matches[@]} -eq 0 ]; then
+        echo "No devices found for module: $module"
+        return 1
+    else
+        echo "${matches[@]}"
+        return 0
+    fi
+}
+
+# Function to set frequencies for a specific group
+set_group() {
+    group=$1
+    declare -n freq_group=$group
+
+    for module in "${!freq_group[@]}"; do
+        device_path=$(find_device_path "$module")
+        if [ -n "$device_path" ]; then
+            echo "Setting $module to ${freq_group[$module]}"
+            echo "${freq_group[$module]}" > "$device_path/userspace/set_freq"
+        else
+            echo "Device for module $module not found"
+        fi
+    done
+}
+
+# Function to set frequency for all modules related to a specific module name
+set_multiple_frequencies() {
+    module=$1
+    freq=$2
+    device_paths=$(find_device_paths "$module")
+    if [ -n "$device_paths" ]; then
+        for device_path in $device_paths; do
+            module_name=$(basename "$device_path")
+            echo "Setting $module_name to $freq"
+            echo $freq > "$device_path/userspace/set_freq"
+        done
+    else
+        echo "No devices found for module: $module"
+    fi
+}
+
+# Function to query supported frequencies for a specific module
+query_supported_frequencies() {
+    module=$1
+    device_path=$(find_device_path "$module")
+    if [ -n "$device_path" ]; then
+        echo "Supported frequencies for $module:"
+        if ! cat "$device_path/available_frequencies"; then
+            echo "No available frequencies file for $module. Please check if the driver is loaded properly."
+        fi
+    else
+        echo "No device path found for module: $module"
+    fi
+}
+
+# Function to query supported frequencies for all modules
+query_all_supported_frequencies() {
+    for module in "${!device_paths[@]}"; do
+        device_path="${device_paths[$module]}"
+        echo "Supported frequencies for $module:"
+        if ! cat "$device_path/available_frequencies"; then
+            echo "No available frequencies file for $module. Please check if the driver is loaded properly."
+        fi
+    done
+}
+
+# Function to display usage instructions
+show_help() {
+    echo "Usage: es_clk [-g <module>] [-q <module>] [-s <module> <frequency>] [-h]"
+    echo "  -g <module>      Query the current frequency of the specified module."
+    echo "                   If no module is specified, query all modules."
+    echo "  -q <module>      Query supported frequencies of the specified module."
+    echo "                   If no module is specified, query all modules."
+    echo "  -s <module> <frequency> Set the frequency of the specified module."
+    echo "  -h               Display this help message."
+}
+
+# Main script logic to process user commands
+if [ "$1" == "-g" ]; then
+    if [ -z "$2" ]; then
+        # Query current frequency for all modules using device_paths array
+        for module in "${!device_paths[@]}"; do
+            device_path="${device_paths[$module]}"
+            echo "Module: $module"
+            if ! cat "$device_path/cur_freq"; then
+                echo "No current frequency file available for $module. Please check if the driver is loaded properly."
+            fi
+        done
+    else
+        # Query current frequency for a specific module, including related modules
+        module=$2
+        device_paths=$(find_device_paths "$module")
+        if [ -n "$device_paths" ]; then
+            for device_path in $device_paths; do
+                module_name=$(basename "$device_path")
+                echo "Module: $module"
+                if ! cat "$device_path/cur_freq"; then
+                    echo "No current frequency file available for $module_name. Please check if the driver is loaded properly."
+                fi
+            done
+        else
+            echo "Device for module $module not found"
+        fi
+    fi
+elif [ "$1" == "-q" ]; then
+    if [ -z "$2" ]; then
+        # Query supported frequencies for all modules
+        query_all_supported_frequencies
+    else
+        # Query supported frequencies for a specified module
+        module=$2
+        query_supported_frequencies "$module"
+    fi
+elif [ "$1" == "-s" ]; then
+    if [[ $2 == group* ]]; then
+        # Set frequencies based on the predefined group
+        set_group $2
+    else
+        # Set specific frequency for a module or related modules
+        module=$2
+        if [ -z "$3" ]; then
+            echo "Usage: es_clk -s <module> <frequency>"
+            exit 1
+        fi
+        freq=$3
+        if [[ "$module" == *"dsp"* ]]; then
+            # Set frequency for all DSP-related modules
+            set_multiple_frequencies "$module" "$freq"
+        else
+            # Set frequency for a specific module
+            device_path=$(find_device_path "$module")
+            if [ -n "$device_path" ]; then
+                echo "Setting $module to $freq"
+                echo $freq > "$device_path/userspace/set_freq"
+            else
+                echo "Device for module $module not found"
+            fi
+        fi
+    fi
+elif [ "$1" == "-h" ]; then
+    # Display help message
+    show_help
+else
+    # If no or invalid parameter provided, display help
+    show_help
+fi
+
