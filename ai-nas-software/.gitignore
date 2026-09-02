@@ -28,5 +28,26 @@ Thumbs.db
 *.log
 tmp/
 
+# ===== 构建输出（SDK 编译产物，体积大且可重建，不入库）=====
+output/
+images/
+*.img
+*.ext4
+*.cpio
+*.tar.gz
+*.o
+*.ko
+*.dtb
+vmlinux
+System.map
+Module.symvers
+
+# ===== 上游源码挂载点（由 git submodule 管理，勿直接放置源码）=====
+# 注意：source/firmware 与 source/mkimg 是本项目自有内容，已入库；
+#       source/linux、source/uboot、source/opensbi 为 submodule 挂载点。
+source/linux/*
+source/uboot/*
+source/opensbi/*
+
 # ===== OpenMediaVault 子模块（上游 Git 跟踪，勿手动放置源码）=====
 # src/openmediavault/ 由 git submodule 管理，详见 README
