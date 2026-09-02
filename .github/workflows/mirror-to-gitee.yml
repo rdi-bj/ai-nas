@@ -2,11 +2,20 @@ name: Mirror to Gitee
 
 # 单向镜像：GitHub(主仓) -> Gitee(国内镜像)
 # 触发：推送到 main 或手动触发
+#
+# 实现说明（不依赖任何第三方 action，避免上游仓库失效导致工作流报错）：
+#   1. 源仓使用 HTTPS 裸克隆。GitHub 上本仓为公开仓库，克隆无需任何凭证，
+#      因此 SSH 私钥不必具备 GitHub 读权限。
+#   2. 仅推送到 Gitee 时使用 SSH 私钥鉴权。
+#   3. 在 /tmp 下操作，避开容器内 /github/workspace 的
+#      "detected dubious ownership" 报错。
+#   4. git push --mirror 同步全部分支与标签。
+#
 # 注意：
 #   1. 本工作流为单向同步，请勿在 Gitee 端直接提交，避免双向冲突。
 #   2. 需在仓库 Settings -> Secrets and variables -> Actions 中配置：
 #        - GITEE_USER   : 你的 Gitee 用户名/组织名（如 rdi-bj）
-#        - GITEE_SSH_KEY: 具备 Gitee 仓库写权限的 SSH 私钥（建议专用部署密钥，且无密码保护）
+#        - GITEE_SSH_KEY: 具备 Gitee 仓库写权限的 SSH 私钥（专用部署密钥，且无密码短语）
 #   3. 首次使用请先在 Gitee 创建同名空仓库（本仓对应 rdi-bj/ai-nas），
 #      并将该 SSH 公钥添加为仓库部署密钥（勾选"允许推送"）。
 
@@ -19,15 +28,25 @@ jobs:
   mirror:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Mirror to Gitee
-        uses: wearerequired/git-mirror-action@v1
         env:
           SSH_PRIVATE_KEY: ${{ secrets.GITEE_SSH_KEY }}
-        with:
-          source-repo: "git@github.com:${{ github.repository }}.git"
-          destination-repo: "git@gitee.com:${{ secrets.GITEE_USER }}/ai-nas.git"
+        run: |
+          set -e
+
+          # 1. 装配 SSH 私钥（仅用于推送 Gitee）
+          mkdir -p "$HOME/.ssh"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$HOME/.ssh/gitee_ed25519"
+          chmod 600 "$HOME/.ssh/gitee_ed25519"
+          export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/gitee_ed25519 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+          # 2. 从 GitHub 公开仓裸克隆（HTTPS，无需凭证）
+          cd /tmp
+          rm -rf mirror.git
+          git clone --bare "https://github.com/${{ github.repository }}.git" mirror.git
+          cd mirror.git
+
+          # 3. 全量镜像推送到 Gitee（含所有分支与标签）
+          git push --mirror "git@gitee.com:${{ secrets.GITEE_USER }}/ai-nas.git"
+
+          echo "Mirror completed."
