@@ -4,7 +4,7 @@
 # AI NAS (eic7700-ai-nas) SDK 构建脚本
 #
 # >>> 脱敏说明 <<<
-# 原始 SDK 从乙方内部 Gerrit 服务器拉取 U-Boot / OpenSBI / Linux 源码，
+# 原始 SDK 从内部服务器拉取 U-Boot / OpenSBI / Linux 源码，
 # 该内部地址（不对外公开）已统一替换为变量 ${GIT_SERVER_BASE}。
 # 使用前请通过环境变量或直接在下方修改为可访问的源码镜像地址，例如：
 #     export GIT_SERVER_BASE=https://your-git-server.com

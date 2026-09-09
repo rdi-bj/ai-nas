@@ -6,14 +6,14 @@
 
 各部分许可**不同**，请勿混用：
 
-| 范围 | 许可 |
-|------|------|
+| 范围                          | 许可               |
+| --------------------------- | ---------------- |
 | 本仓库自行整理/编写的部分（构建脚本、文档、目录组织） | **Mulan PSL v2** |
-| `src/`（自研服务、Web UI） | **Mulan PSL v2** |
-| `board-support/linux/**` | **GPL-2.0** |
-| `board-support/uboot/**` | **GPL-2.0+** |
-| `board-support/opensbi/**` | **BSD-2-Clause** |
-| 二进制固件（`*.bin`） | ⚠️ **授权待确认**，见 `NOTICE.md` |
+| `src/`（自研服务、Web UI）         | **Mulan PSL v2** |
+| `board-support/linux/**`    | **GPL-2.0**      |
+| `board-support/uboot/**`    | **GPL-2.0+**     |
+| `board-support/opensbi/**`  | **BSD-2          |
+| 二进制固件（`*.bin`）              | 见 `NOTICE.md`    |
 
 > Mulan PSL v2 是国内首个通过 OSI 认证的开源许可证，中英双语、含显式专利授权与防御性终止条款，宽松无传染性，适合本土企业与法务。
 
@@ -51,7 +51,7 @@ ai-nas-software/
 
 ## 上游源码：以 submodule 引用，不复制
 
-上游源码体积约 **1.5 GB / 10 万文件**，不适合放入主仓。本仓库通过 `.gitmodules` 声明依赖，
+上游源码体积约 **1.5 GB / 10 万文件**，不放入主仓。本仓库通过 `.gitmodules` 声明依赖，
 **需要时按需挂载**：
 
 ```bash
@@ -64,11 +64,11 @@ git submodule update --init source/uboot
 git submodule update --init source/opensbi
 ```
 
-| 组件 | 版本 | 许可 |
-|------|------|------|
-| Linux | 6.6.138 | GPL-2.0 |
-| U-Boot | 2024.01 | GPL-2.0+ |
-| OpenSBI | — | BSD-2-Clause |
+| 组件      | 版本      | 许可           |
+| ------- | ------- | ------------ |
+| Linux   | 6.6.138 | GPL-2.0      |
+| U-Boot  | 2024.01 | GPL-2.0+     |
+| OpenSBI | —       | BSD-2-Clause |
 
 > **重要限制**：上游官方源码**不含芯片厂商的 SoC 支持代码**（驱动、时钟、pinctrl 等私有补丁），
 > 这些补丁由厂商提供且未包含在本仓库。因此仅挂载 submodule **无法直接构建出可启动镜像**；
@@ -92,17 +92,7 @@ bash setenv.sh
 
 构建环境要求：Debian/Ubuntu，工具链 `riscv64-unknown-linux-gnu-`（默认位于 `/opt/riscv/bin`）。
 
-## 可配置变量（脱敏项）
-
-原始 SDK 中的内部信息已全部改为环境变量，**不随本仓库公开**：
-
-| 变量 | 原硬编码内容 | 用途 |
-|------|-------------|------|
-| `GIT_SERVER_BASE` | 芯片厂商内部 Gerrit 地址 | 上游源码服务器（U-Boot / OpenSBI / Linux） |
-| `DEBIAN_REPO_BASE` | 芯片厂商私有 Debian 软件源 | rootfs 构建用的 apt 源 |
-| `USER_PASSWORD` | 明文口令 `eswin` | rootfs 默认用户口令 |
-
-> 上表「原硬编码内容」仅描述类别，原始地址/口令已从仓库中移除，如有需要请从原始交付物获取。
+# 
 
 ## ⚠️ 安全提示
 
@@ -111,9 +101,9 @@ bash setenv.sh
 
 ## 关联目录
 
-| 目录 | 内容 | 许可证 |
-|------|------|--------|
-| `ai-nas-hardware` | 硬件设计 | CERN-OHL-P v2 |
+| 目录                | 内容           | 许可证                         |
+| ----------------- | ------------ | --------------------------- |
+| `ai-nas-hardware` | 硬件设计         | CERN-OHL-P v2               |
 | `ai-nas-software` | 软件、板级配置、构建脚本 | Mulan PSL v2（GPL/BSD 部分见上表） |
 
 ## 双平台同步
