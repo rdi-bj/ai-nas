@@ -33,6 +33,15 @@ cd ../ai-nas-software
 
 本仓以 **GitHub 为主仓**，通过 `.github/workflows/mirror-to-gitee.yml` 单向镜像到 **Gitee**，请勿在 Gitee 端直接提交。
 
+## 二进制发布（固件 / 系统镜像）
+
+可烧录 / 部署的二进制资产（引导固件、系统镜像、OMV 安装包、内核 deb 等）通过 **GitHub Releases** 发布，不纳入 git 仓库：
+
+- 最新发布包 `v1.0-sdk-20260722`：[GitHub Releases 下载](https://github.com/rdi-bj/ai-nas/releases/tag/v1.0-sdk-20260722)
+- 全部发布历史：[GitHub Releases](https://github.com/rdi-bj/ai-nas/releases)
+
+> 说明：受 Gitee 免费版单文件（≤100 MB）与 LFS 额度限制，本项目的二进制资产集中在 GitHub Releases；Gitee 仅镜像源码，下载请走上述 GitHub 链接。
+
 ## 许可证声明
 
 - 硬件设计：CERN Open Hardware Licence v2 - Permissive（见 `ai-nas-hardware/LICENSE`）。
